@@ -272,11 +272,22 @@ def main(port: int, transport: str, wxid: str) -> int:
 
             return [types.TextContent(type="text", text=output)]
         if name == "send_wechat_message":
-            if "content" not in arguments or "to" not in arguments:
-                raise ValueError("Missing required argument 'content' or 'to'")
-            to = arguments["to"]
-            content = "🤖" + arguments["content"]
-            wx.SendMsg(content, to)
+            if "who" not in arguments:
+                raise ValueError("Missing required argument 'who'")
+            if "content" not in arguments and "files" not in arguments:
+                raise ValueError("Missing required argument 'content' or 'files'")
+
+            who = arguments["who"]
+            content = arguments.get("content", None)
+            files = arguments.get("files", [])
+            if content is None and len(files) == 0:
+                raise ValueError("Missing required argument 'content' or 'files'")
+
+            if content is not None:
+                wx.SendMsg(content, who)
+
+            if len(files) > 0:
+                wx.SendFiles(filepath=files, who=who)
             return [types.TextContent(type="text", text="send success")]
 
         raise ValueError("Unknown tool")
@@ -363,15 +374,22 @@ def main(port: int, transport: str, wxid: str) -> int:
                 description="Send WeChat Message",
                 inputSchema={
                     "type": "object",
-                    "required": ["to", "content"],
+                    "required": ["to"],
                     "properties": {
-                        "to": {
+                        "who": {
                             "type": "string",
                             "description": "room name of user name",
                         },
                         "content": {
                             "type": "string",
                             "description": "content",
+                        },
+                        "files": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "file path",
+                            },
                         },
                     },
                 },
