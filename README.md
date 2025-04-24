@@ -22,3 +22,7 @@ http://127.0.0.1:8000/sse
 
 # start stdio
 uv run main.py --wxid "your_wechat_id" --transport stdio
+
+# 感谢以下开源项目的支持
+- [wxauto](https://github.com/cluic/wxauto) 微信自动化
+- [pywxdump](https://github.com/xaoyaoo/PyWxDump) wxdump
