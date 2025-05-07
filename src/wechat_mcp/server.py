@@ -80,7 +80,7 @@ def init():
 @click.option(
     "--transport",
     type=click.Choice(["stdio", "sse"]),
-    default="sse",
+    default="stdio",
     help="Transport type",
 )
 @click.option("--wxid", default=None, help="wxid")
@@ -91,6 +91,7 @@ def main(port: int, transport: str, wxid: str) -> int:
         wx_info = next((x for x in wxinfos if x["wxid"] == wxid), None)
     else:
         wx_info = wxinfos[0]
+        wxid = wx_info["wxid"]
     init_info = init_last(wx_info["wxid"])["body"]
     # wxid = init_info["wxid"]
     key = wx_info["key"]
@@ -206,9 +207,9 @@ def main(port: int, transport: str, wxid: str) -> int:
 
             for msg in msgs[0]:
                 if msg["is_sender"] == 0:
-                    output += f"[{usersInfo[msg['talker']]}] {msg['CreateTime']}\n{msg['msg']}\n---\n"
+                    output += f"[{usersInfo[msg['talker']]}] {msg['CreateTime']}\n{msg['msg']}\n\n---\n"
                 else:
-                    output += f"[我] {msg['CreateTime']}\n{msg['msg']}\n---\n"
+                    output += f"[我] {msg['CreateTime']}\n{msg['msg']}\n\n---\n"
             return [types.TextContent(type="text", text=output)]
         if name == "get_last_wechat_message":
             is_room = arguments["is_room"]
@@ -238,12 +239,13 @@ def main(port: int, transport: str, wxid: str) -> int:
                 for msg in res:
                     msg_detail = db.get_msg_detail(msg)
                     content = msg_detail["msg"]
+                    createTime = msg_detail["CreateTime"]
                     if msg_detail["is_sender"] == 0:
                         output += (
-                            f"[{session['nickname']}] {createTime}\n{content}\n---\n"
+                            f"[{session['nickname']}] {createTime}\n{content}\n\n---\n"
                         )
                     else:
-                        output += f"[我] {createTime}\n{content}\n---\n"
+                        output += f"[我] {createTime}\n{content}\n\n---\n"
                 print(output)
                 return [types.TextContent(type="text", text=output)]
             else:
@@ -265,10 +267,10 @@ def main(port: int, transport: str, wxid: str) -> int:
                     content = msg_detail["msg"]
                     if msg_detail["is_sender"] == 0:
                         output += (
-                            f"[{userinfo['nickname']}] {createTime}\n{content}\n---\n"
+                            f"[{userinfo['nickname']}] {createTime}\n{content}\n\n---\n"
                         )
                     else:
-                        output += f"[我] {createTime}\n{content}\n---\n"
+                        output += f"[我] {createTime}\n{content}\n\n---\n"
 
             return [types.TextContent(type="text", text=output)]
         if name == "send_wechat_message":
@@ -436,4 +438,5 @@ def main(port: int, transport: str, wxid: str) -> int:
     return 0
 
 
-main()
+if __name__ == "__main__":
+    main()

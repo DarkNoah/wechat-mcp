@@ -1,14 +1,16 @@
-# init
+# install
 ```bash
-git clone https://github.com/DarkNoah/wechat-mcp
-uv sync
+pip install wechat-mcp
 ```
-you need to login wechat pc first
+
+需要先登陆微信
 
 # start sse
 ```bash
-uv run main.py --wxid "your_wechat_id" --port 8000
+wechat-mcp --wxid "your_wechat_id" --port 8000 --transport sse
 ```
+
+
 
 # tool list
 - get_wechat_message
@@ -20,8 +22,17 @@ uv run main.py --wxid "your_wechat_id" --port 8000
 ## sse
 http://127.0.0.1:8000/sse
 
-# start stdio
-uv run main.py --wxid "your_wechat_id" --transport stdio
+## stdio
+```json
+{
+  "mcpServers": {
+    "wechat-mcp": {
+      "command": "cmd",
+      "args": ["/c", "python", "-m", "wechat_mcp"]
+    },
+  }
+}
+```
 
 # 感谢以下开源项目的支持
 - [wxauto](https://github.com/cluic/wxauto) 微信自动化
